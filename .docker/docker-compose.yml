@@ -47,7 +47,14 @@ services:
     working_dir: ${WORKING_DIR}
     links:
       - mysql
-  
+  wordpress:
+    image: wordpress:4.7-apache
+    environment:
+      WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      VIRTUAL_HOST: blog.${SERVER_NAME}
+      LETSENCRYPT_HOST: blog.${SERVER_NAME}
+      LETSENCRYPT_EMAIL: wenhua4438@gmail.com
+
   mysql:
     container_name: ${SERVER_NAME}.mysql
     build: mysql
@@ -65,8 +72,8 @@ services:
       - /run/mysqld
       - ../:/srv/www
       - ./mysql/my.cnf:/etc/mysql/my.cnf
-    ports:
-      - '3306:3306'
+    # ports:
+    #   - '3306:3306'
   
   mysql-data:
     image: busybox
