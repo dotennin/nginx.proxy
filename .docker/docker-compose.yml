@@ -31,7 +31,7 @@ services:
       LETSENCRYPT_HOST: ${SERVER_NAME},www.${SERVER_NAME}
       LETSENCRYPT_EMAIL: wenhua4438@gmail.com
     volumes_from: 
-      - letsencrypt
+      - php
   php:
     build: php
     container_name: ${SERVER_NAME}.php
