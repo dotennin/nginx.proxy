@@ -6,7 +6,6 @@ FROM nginx:latest
 # Add the nginx configuration file to the container
 RUN rm /etc/nginx/conf.d/default.conf
 ADD nginx.tmpl /etc/nginx/conf.d/default.conf
-ADD letsencrypt.conf /etc/nginx/snippets/letsencrypt.conf
 ADD ssl.conf /etc/nginx/snippets/ssl.conf
 ADD php.conf /etc/nginx/snippets/php.conf
 ADD server_default.conf /etc/nginx/snippets/server_default.conf
