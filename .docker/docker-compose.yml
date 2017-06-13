@@ -42,8 +42,7 @@ services:
       - ./php/php.log:/var/log/php.log
       - ./php/php.ini:/usr/local/etc/php/php.ini
       - ./php/locale:/etc/default/locale
-    volumes_from:
-      - mysql-data
+      - ../mysql:/var/lib/mysql
     working_dir: ${WORKING_DIR}
     links:
       - mysql
@@ -69,16 +68,10 @@ services:
       SERVER_NAME: ${SERVER_NAME}
     expose: 
       - '3306'
-    volumes_from:
-      - mysql-data
     volumes:
       - /run/mysqld
       - ../:/srv/www
       - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ../mysql:/var/lib/mysql
     # ports:
     #   - '3306:3306'
-  
-  mysql-data:
-    image: busybox
-    volumes:
-      - ./persistent/mysql:/var/lib/mysql
