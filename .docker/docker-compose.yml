@@ -55,6 +55,8 @@ services:
       VIRTUAL_HOST: blog.${SERVER_NAME}
       LETSENCRYPT_HOST: blog.${SERVER_NAME}
       LETSENCRYPT_EMAIL: wenhua4438@gmail.com
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
 
   mysql:
     container_name: ${SERVER_NAME}.mysql
