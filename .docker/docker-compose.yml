@@ -49,6 +49,7 @@ services:
       - mysql
   wordpress:
     image: wordpress:4.7-apache
+    container_name: ${SERVER_NAME}.wordpress
     environment:
       WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       VIRTUAL_HOST: blog.${SERVER_NAME}
