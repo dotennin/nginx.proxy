@@ -38,6 +38,8 @@ remove:
 down:
 	cd $(PWD)/.docker/ && \
 	docker-compose -p $(SERVER_NAME) down
+monitor:
+	docker stats $(docker inspect -f {{.NAME}} $(docker ps -q))
 
 .PHONY: ssh $(t)
 ssh:
