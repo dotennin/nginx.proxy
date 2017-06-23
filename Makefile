@@ -7,7 +7,7 @@ MYSQL_USER          = ${SERVER_NAME}
 MYSQL_PASSWORD      = ${SERVER_NAME}
 WORKING_DIR         = /var/www
 NGINX_ROOT          = ${WORKING_DIR}
-IS_PROVISION        = trude
+IS_PROVISION        = true
 
 
 ifeq (${IS_PROVISION}, true)
