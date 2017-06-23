@@ -1,34 +1,61 @@
-SERVER_NAME         = $(subst _,.,$(subst -,.,$(notdir $(CURDIR))))
+SHELL=/bin/bash
+# SERVER_NAME         = $(subst _,.,$(subst -,.,$(notdir $(CURDIR))))
+SERVER_NAME         = $(notdir $(CURDIR))
 MYSQL_ROOT_PASSWORD = ${SERVER_NAME}
 MYSQL_DATABASE      = ${SERVER_NAME}
 MYSQL_USER          = ${SERVER_NAME}
 MYSQL_PASSWORD      = ${SERVER_NAME}
 WORKING_DIR         = /var/www
 NGINX_ROOT          = ${WORKING_DIR}
+IS_PROVISION        = trude
+
+
+ifeq (${IS_PROVISION}, true)
+	RESTART = always
+	FILE_NAME = docker-compose-pov.yml
+else
+	RESTART = no
+	FILE_NAME = docker-compose-dev.yml
+endif
 .PHONY: test
 test:
-	@echo $(NGINX_ROOT)
-	@echo $(SERVER_NAME)
-	@echo ${MYSQL_USER}
-	@echo ${MYSQL_PASSWORD}
-	@echo ${MYSQL_DATABASE}
-	@echo ${MYSQL_ROOT_PASSWORD}
+	@echo $(filter-out $@,$(MAKECMDGOALS)) 
+	@echo $(SHELL)
+	@echo NGINX_ROOT: $(NGINX_ROOT)
+	@echo IS_PROVISION: $(IS_PROVISION)
+	@echo SERVER_NAME: $(SERVER_NAME)
+	@echo MYSQL_USER: ${MYSQL_USER}
+	@echo MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+	@echo MYSQL_DATABASE: ${MYSQL_DATABASE}
+	@echo MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+	@echo RESTART: ${RESTART}
 
 .PHONY: install
 install: 
-	chmod +x .docker/install.sh
-	.docker/install.sh $(SERVER_NAME) $(NGINX_ROOT) $(WORKING_DIR) $(MYSQL_ROOT_PASSWORD) $(MYSQL_DATABASE) $(MYSQL_USER) $(MYSQL_PASSWORD)
-
-up:
+	@if [ true != $(IS_PROVISION) ];then chmod +x .docker/install.sh && .docker/install.sh; fi;
 	cd $(PWD)/.docker/ && \
 		export SERVER_NAME=$(SERVER_NAME) && \
+		export IS_PROVISION=$(IS_PROVISION) && \
 		export NGINX_ROOT=$(NGINX_ROOT) && \
 		export WORKING_DIR=$(WORKING_DIR) && \
 		export MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) && \
 		export MYSQL_DATABASE=$(MYSQL_DATABASE) && \
 		export MYSQL_USER=$(MYSQL_USER) && \
 		export MYSQL_PASSWORD=$(MYSQL_PASSWORD) && \
-		docker-compose -p $(SERVER_NAME) up
+		export RESTART=$(RESTART) && \
+		docker-compose -f $(FILE_NAME) -p $(SERVER_NAME) up --build --force-recreate 
+up:
+	cd $(PWD)/.docker/ && \
+		export SERVER_NAME=$(SERVER_NAME) && \
+		export IS_PROVISION=$(IS_PROVISION) && \
+		export NGINX_ROOT=$(NGINX_ROOT) && \
+		export WORKING_DIR=$(WORKING_DIR) && \
+		export MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) && \
+		export MYSQL_DATABASE=$(MYSQL_DATABASE) && \
+		export MYSQL_USER=$(MYSQL_USER) && \
+		export MYSQL_PASSWORD=$(MYSQL_PASSWORD) && \
+		export RESTART=$(RESTART) && \
+		docker-compose -f $(FILE_NAME) -p $(SERVER_NAME) up
 
 .PHONY: remove
 remove: 

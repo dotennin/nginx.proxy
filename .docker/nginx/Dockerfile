@@ -13,8 +13,7 @@ ADD server_default.conf /etc/nginx/snippets/server_default.conf
 RUN mkdir -p /srv/config
 
 ADD start.sh /srv/config/start.sh
-ADD reload.sh /srv/config/reload.sh
-RUN chmod +x /srv/config/start.sh /srv/config/reload.sh
+RUN chmod +x /srv/config/start.sh
 
 RUN usermod -a -G www-data nginx
 # RUN sed -i 's/nginx;/www-data/g' /etc/nginx/;

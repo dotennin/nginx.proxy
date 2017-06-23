@@ -1,22 +1,5 @@
 version: '2'
 services:
-  nginx-proxy:
-    image: jwilder/nginx-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "/etc/nginx/vhost.d"
-      - "/usr/share/nginx/html"
-      - "/var/run/docker.sock:/tmp/docker.sock:ro"
-      - "/etc/nginx/certs"
-
-  letsencrypt-nginx-proxy-companion:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    volumes_from:
-      - "nginx-proxy"
   nginx:
     container_name: ${SERVER_NAME}.nginx
     build: nginx
@@ -25,11 +8,12 @@ services:
       - ./nginx/error.log:/var/log/nginx/${SERVER_NAME}.error.log
       - /etc/hosts:/etc/hosts
     environment:
-      HTTPS_ONLY: 'false'
+      HTTPS_ONLY: 'true'
       NGINX_ROOT: ${NGINX_ROOT}
       VIRTUAL_HOST: ${SERVER_NAME},www.${SERVER_NAME}
     volumes_from: 
       - php
+    restart: ${RESTART}
   php:
     build: php
     container_name: ${SERVER_NAME}.php
@@ -46,18 +30,7 @@ services:
     working_dir: ${WORKING_DIR}
     links:
       - mysql
-  wordpress:
-    image: wordpress:4.7-apache
-    container_name: ${SERVER_NAME}.wordpress
-    environment:
-      WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      VIRTUAL_HOST: blog.${SERVER_NAME}
-      LETSENCRYPT_HOST: ${SERVER_NAME},blog.${SERVER_NAME},www.${SERVER_NAME}
-      LETSENCRYPT_EMAIL: wenhua4438@gmail.com
-    volumes:
-      - ../wp-content:/var/www/html/wp-content
-      - /etc/localtime:/etc/localtime:ro
-
+    restart: ${RESTART}
   mysql:
     container_name: ${SERVER_NAME}.mysql
     build: mysql
@@ -74,5 +47,6 @@ services:
       - ./mysql/my.cnf:/etc/mysql/my.cnf
       - ../mysql:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
+    restart: ${RESTART}
     # ports:
     #   - '3306:3306'

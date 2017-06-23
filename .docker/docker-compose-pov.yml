@@ -1,0 +1,84 @@
+version: '2'
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/nginx/vhost.d"
+      - "/usr/share/nginx/html"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+      - "/etc/nginx/certs"
+    restart: ${RESTART}
+
+  letsencrypt-nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    volumes_from:
+      - "nginx-proxy"
+    restart: ${RESTART}
+  nginx:
+    container_name: ${SERVER_NAME}.nginx
+    build: nginx
+    volumes:
+      - ./nginx/access.log:/var/log/nginx/${SERVER_NAME}.default.log
+      - ./nginx/error.log:/var/log/nginx/${SERVER_NAME}.error.log
+      - /etc/hosts:/etc/hosts
+    environment:
+      HTTPS_ONLY: 'false'
+      NGINX_ROOT: ${NGINX_ROOT}
+      VIRTUAL_HOST: ${SERVER_NAME},www.${SERVER_NAME}
+    volumes_from: 
+      - php
+    restart: ${RESTART}
+  php:
+    build: php
+    container_name: ${SERVER_NAME}.php
+    volumes:
+      - /php
+      - ../:${WORKING_DIR}
+      - /run/mysqld
+      - ./php/php.log:/var/log/php.log
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+      - ./php/locale:/etc/default/locale
+      - ../mysql:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+
+    working_dir: ${WORKING_DIR}
+    links:
+      - mysql
+    restart: ${RESTART}
+  wordpress:
+    image: wordpress:4.7-apache
+    container_name: ${SERVER_NAME}.wordpress
+    environment:
+      WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      VIRTUAL_HOST: blog.${SERVER_NAME}
+      LETSENCRYPT_HOST: ${SERVER_NAME},blog.${SERVER_NAME},www.${SERVER_NAME}
+      LETSENCRYPT_EMAIL: wenhua4438@gmail.com
+    volumes:
+      - ../wp-content:/var/www/html/wp-content
+      - /etc/localtime:/etc/localtime:ro
+    restart: ${RESTART}
+
+  mysql:
+    container_name: ${SERVER_NAME}.mysql
+    build: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      SERVER_NAME: ${SERVER_NAME}
+    expose: 
+      - '3306'
+    volumes:
+      - /run/mysqld
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ../mysql:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    restart: ${RESTART}
+    # ports:
+    #   - '3306:3306'

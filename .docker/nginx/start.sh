@@ -7,6 +7,7 @@ function replace {
 
 if [[ $HTTPS_ONLY == true ]]; then
 	replace "##https##" "" /etc/nginx/conf.d/default.conf
+	replace "##https##" "" /etc/nginx/snippets/server_default.conf
 else
 	replace "##http##" "" /etc/nginx/conf.d/default.conf
 fi
