@@ -32,7 +32,7 @@ test:
 
 .PHONY: install
 install: 
-	@if [ true != $(IS_PROVISION) ];then chmod +x .docker/install.sh && .docker/install.sh; fi;
+	# @if [ true != $(IS_PROVISION) ];then chmod +x .docker/install.sh && .docker/install.sh; fi;
 	cd $(PWD)/.docker/ && \
 		export SERVER_NAME=$(SERVER_NAME) && \
 		export IS_PROVISION=$(IS_PROVISION) && \
@@ -59,7 +59,7 @@ up:
 logs:
 	cd $(PWD)/.docker/ && \
 	export SERVER_NAME=$(SERVER_NAME) && \
-	docker-compose -p $(SERVER_NAME) -f $(FILE_NAME) logs
+	docker-compose -p $(SERVER_NAME) -f $(FILE_NAME) logs --follow
 
 .PHONY: remove
 remove: 
