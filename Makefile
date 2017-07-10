@@ -43,7 +43,7 @@ install:
 		export MYSQL_USER=$(MYSQL_USER) && \
 		export MYSQL_PASSWORD=$(MYSQL_PASSWORD) && \
 		export RESTART=$(RESTART) && \
-		docker-compose -f $(FILE_NAME) -p $(SERVER_NAME) up --build --force-recreate 
+		docker-compose -f $(FILE_NAME) -p $(SERVER_NAME) up --build --force-recreate -d
 up:
 	cd $(PWD)/.docker/ && \
 		export SERVER_NAME=$(SERVER_NAME) && \
@@ -55,7 +55,7 @@ up:
 		export MYSQL_USER=$(MYSQL_USER) && \
 		export MYSQL_PASSWORD=$(MYSQL_PASSWORD) && \
 		export RESTART=$(RESTART) && \
-		docker-compose -f $(FILE_NAME) -p $(SERVER_NAME) up
+		docker-compose -f $(FILE_NAME) -p $(SERVER_NAME) up -d
 logs:
 	cd $(PWD)/.docker/ && \
 	export SERVER_NAME=$(SERVER_NAME) && \
