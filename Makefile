@@ -56,6 +56,10 @@ up:
 		export MYSQL_PASSWORD=$(MYSQL_PASSWORD) && \
 		export RESTART=$(RESTART) && \
 		docker-compose -f $(FILE_NAME) -p $(SERVER_NAME) up
+logs:
+	cd $(PWD)/.docker/ && \
+	export SERVER_NAME=$(SERVER_NAME) && \
+	docker-compose -p $(SERVER_NAME) -f $(FILE_NAME) logs
 
 .PHONY: remove
 remove: 
