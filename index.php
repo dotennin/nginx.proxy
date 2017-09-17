@@ -1,12 +1,24 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-$data = array(
-	array('id' => '1','name' => 'Cynthia'),
-	array('id' => '2','name' => 'Keith'),
-	array('id' => '3','name' => 'Robert'),
-	array('id' => '4','name' => 'Theresa'),
-	array('id' => '5','name' => 'Margaret')
-);
+define('DB_DATABASE', 'nginx.proxy');    //データベース指定
+define('DB_USERNAME', 'root');     //データベースユーザ
+define('DB_PASSWORD', 'nginx.proxy');   //データベースパスワード
+define('PDO_DSN', 'mysql:dbhost=localhost;dbname=' .DB_DATABASE);
+//   データベースに接続するための文字列
 
-echo json_encode($data);
+try {
+    //connect
+    $db = new PDO(PDO_DSN, DB_USERNAME, DB_PASSWORD);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    //insert
+    $db->exec("insert into users (name, score) values ('ryo', '55')");
+    echo "user added!";
+    exit;
+
+    //disconnect
+    $db = null;
+ }catch (PDOException $e){
+    echo $e->getMessage();
+    exit;
+}
 ?>
